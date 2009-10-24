@@ -10,6 +10,9 @@ import java.io.*;
 import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.text.rtf.*;
+import java.awt.event.*;
+import javax.swing.event.*;
+
 
 /**
  *
@@ -17,11 +20,11 @@ import javax.swing.text.rtf.*;
  */
 public class UserInterface extends JFrame
 {
-	private JPanel editorPanel, sidePanel, mainPanel;
+	private JPanel libraryPanel, editorPanel, sidePanel, mainPanel;
 	private JEditorPane editor;
 	private JSplitPane splitPane;
-	private JList sideList, libList;
-	private JScrollPane editorScroll, sideScroll;
+	private JList sideList, libraryList;
+	private JScrollPane libraryScroll, editorScroll, sideScroll;
 
 	private RTFEditorKit rtf;
 	private FileIO file;
@@ -48,15 +51,19 @@ public class UserInterface extends JFrame
 
 	private void makeUI ()
 	{
+		makeLibrary();
 		makeEditor();
 		makeSidePanel();
 		makeMainPanel();
 
 		editorPanel.add(editorScroll);
-		
+		editorPanel.setVisible(false);
+
+		libraryPanel.add(libraryScroll);
+
 		sidePanel = new JPanel();
-		sidePanel.setPreferredSize(new Dimension(250, 100));
-		sidePanel.setMaximumSize(new Dimension(250, 100));
+		sidePanel.setPreferredSize(new Dimension(200, 100));
+		sidePanel.setMaximumSize(new Dimension(200, 100));
 		sidePanel.setMinimumSize(new Dimension(200, 100));
 
 		// Ties both panes together.
@@ -78,6 +85,7 @@ public class UserInterface extends JFrame
 		sideList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
 		sideList.setVisibleRowCount(-1);
 		sideList.setFont(sideFont);
+		sideList.addListSelectionListener(new LibrarySelectionHandler());
 
 		sideScroll = new JScrollPane(sideList);
 		sideScroll.setVerticalScrollBarPolicy(
@@ -90,7 +98,25 @@ public class UserInterface extends JFrame
 	private void makeMainPanel ()
 	{
 		mainPanel = new JPanel();
+		mainPanel.add(libraryPanel);
 		mainPanel.add(editorPanel);
+	}
+
+	private void makeLibrary ()
+	{
+		String[] listContent = new String[5];
+		listContent[0] = "Enchiridion.rtf";
+		listContent[1] = "Blaat.rtf";
+		listContent[2] = "Bla.rtf";
+		listContent[3] = "Foo.rtf";
+		listContent[4] = "Bar.rtf";
+
+		libraryPanel = new JPanel();
+		libraryList = new JList(listContent);
+		libraryScroll = new JScrollPane(libraryList);
+
+		libraryScroll.setPreferredSize(new Dimension(1000, 800));
+		libraryScroll.setMaximumSize(new Dimension(1000, 800));
 	}
 
 	private void makeEditor ()
@@ -130,6 +156,26 @@ public class UserInterface extends JFrame
 		catch (BadLocationException e)
 		{
 			System.out.println("Bad Location");
+		}
+	}
+
+	private class LibrarySelectionHandler implements ListSelectionListener
+	{
+		public void valueChanged(ListSelectionEvent e)
+		{
+			if (e.getFirstIndex() == 1)
+			{
+				editorPanel.setVisible(true);
+				libraryPanel.setVisible(false);
+			}
+
+			if (e.getFirstIndex() == 0)
+			{
+				editorPanel.setVisible(false);
+				libraryPanel.setVisible(true);
+			}
+
+			JOptionPane.showMessageDialog(null, e.getFirstIndex());
 		}
 	}
 }
