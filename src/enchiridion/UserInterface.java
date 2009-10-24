@@ -20,11 +20,13 @@ public class UserInterface extends JFrame
 	private JPanel editorPanel, sidePanel, mainPanel;
 	private JEditorPane editor;
 	private JSplitPane splitPane;
-	private JList sideList, mainList;
+	private JList sideList, libList;
 	private JScrollPane editorScroll, sideScroll;
 
 	private RTFEditorKit rtf;
 	private FileIO file;
+
+	private Font sideFont = new Font ("SansSerif", Font.BOLD, 24);
 
 	public UserInterface ()
 	{
@@ -46,24 +48,11 @@ public class UserInterface extends JFrame
 
 	private void makeUI ()
 	{
-		// For the editor pane.
-		editorPanel = new JPanel();
-		editor = new JEditorPane();
-		rtf = new RTFEditorKit();
-		file = new FileIO();
+		makeEditor();
+		makeSidePanel();
+		makeMainPanel();
 
-		sideScroll = new JScrollPane(editor);
-		sideScroll.setVerticalScrollBarPolicy(
-				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		
-		sideScroll.setPreferredSize(new Dimension(800, 800));
-		sideScroll.setMaximumSize(new Dimension(800, 800));
-		editor.setEditorKit(rtf);
-
-		editorPanel.add(sideScroll);
-		
-		mainPanel = new JPanel();
-		mainPanel.add(editorPanel);
+		editorPanel.add(editorScroll);
 		
 		sidePanel = new JPanel();
 		sidePanel.setPreferredSize(new Dimension(250, 100));
@@ -75,9 +64,58 @@ public class UserInterface extends JFrame
 				mainPanel);
 
 		// Sidebar
-		makeSidePanel();
-		sidePanel.add(sideList);
+		sidePanel.add(sideScroll);
+	}
 
+	private void makeSidePanel ()
+	{
+		String[] listContent = new String[2];
+		listContent[0] = "Main Library";
+		listContent[1] = "Editor";
+
+		sideList = new JList(listContent);
+		sideList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		sideList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+		sideList.setVisibleRowCount(-1);
+		sideList.setFont(sideFont);
+
+		sideScroll = new JScrollPane(sideList);
+		sideScroll.setVerticalScrollBarPolicy(
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+		sideScroll.setPreferredSize(new Dimension(200, 800));
+		sideScroll.setMaximumSize(new Dimension(200, 800));
+	}
+
+	private void makeMainPanel ()
+	{
+		mainPanel = new JPanel();
+		mainPanel.add(editorPanel);
+	}
+
+	private void makeEditor ()
+	{
+		// For the editor pane.
+		editorPanel = new JPanel();
+		editor = new JEditorPane();
+		rtf = new RTFEditorKit();
+		file = new FileIO();
+
+		// Make file editable.
+		editor.setEditorKit(rtf);
+
+		editorScroll = new JScrollPane(editor);
+		editorScroll.setVerticalScrollBarPolicy(
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+		editorScroll.setPreferredSize(new Dimension(800, 800));
+		editorScroll.setMaximumSize(new Dimension(800, 800));
+
+		editorOpen();
+	}
+
+	private void editorOpen ()
+	{
 		// Populate editor with content.
 		FileInputStream fileStream = file.read("/enchiridion/enchiridion.rtf");
 
@@ -93,22 +131,5 @@ public class UserInterface extends JFrame
 		{
 			System.out.println("Bad Location");
 		}
-	}
-
-	private void makeSidePanel ()
-	{
-		String[] listContent = new String[2];
-		listContent[0] = "Main Library";
-		listContent[1] = "Editor";
-
-		sideList = new JList(listContent);
-		sideList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-		sideList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-		sideList.setVisibleRowCount(-1);
-	}
-
-	private void makeMainPanel ()
-	{
-
 	}
 }
