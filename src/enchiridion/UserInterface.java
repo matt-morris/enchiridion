@@ -10,8 +10,9 @@ import java.io.*;
 import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.text.rtf.*;
+//import javax.swing.event.*;
 import java.awt.event.*;
-import javax.swing.event.*;
+
 
 
 /**
@@ -20,16 +21,24 @@ import javax.swing.event.*;
  */
 public class UserInterface extends JFrame
 {
-	private JPanel libraryPanel, editorPanel, sidePanel, mainPanel;
+	private JPanel libraryPanel, editorPanel, sidePanel, sideButtons, mainPanel;
 	private JEditorPane editor;
 	private JSplitPane splitPane;
 	private JList sideList, libraryList;
 	private JScrollPane libraryScroll, editorScroll, sideScroll;
+	private JLabel libraryLabel, editorLabel;
+	private JButton libraryButton, editorButton;
 
 	private RTFEditorKit rtf;
 	private FileIO file;
 
 	private Font sideFont = new Font ("SansSerif", Font.BOLD, 24);
+	private ImageIcon libraryIcon = createImageIcon(
+			"accessories-text-editor.png",
+			"Library");
+	private ImageIcon editorIcon = createImageIcon(
+			"system-file-manager.png",
+			"Editor");
 
 	public UserInterface ()
 	{
@@ -51,15 +60,15 @@ public class UserInterface extends JFrame
 
 	private void makeUI ()
 	{
-		makeLibrary();
+		Library library = new Library();
+
+		libraryPanel = library.getPanel();
 		makeEditor();
 		makeSidePanel();
 		makeMainPanel();
 
 		editorPanel.add(editorScroll);
 		editorPanel.setVisible(false);
-
-		libraryPanel.add(libraryScroll);
 
 		sidePanel = new JPanel();
 		sidePanel.setPreferredSize(new Dimension(200, 100));
@@ -76,18 +85,35 @@ public class UserInterface extends JFrame
 
 	private void makeSidePanel ()
 	{
-		String[] listContent = new String[2];
-		listContent[0] = "Main Library";
-		listContent[1] = "Editor";
+		Object[] listContent = new String[2];
+//		libraryLabel = new JLabel("Library", libraryIcon, JLabel.CENTER);
+//		editorLabel = new JLabel("Editor", editorIcon, JLabel.CENTER);
 
-		sideList = new JList(listContent);
-		sideList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-		sideList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-		sideList.setVisibleRowCount(-1);
-		sideList.setFont(sideFont);
-		sideList.addListSelectionListener(new LibrarySelectionHandler());
+		libraryButton = new JButton("Library", libraryIcon);
+		editorButton = new JButton("Editor", editorIcon);
+		
+//		sideList.setFont(sideFont);
+//		sideList.addListSelectionListener(new LibrarySelectionHandler());
 
-		sideScroll = new JScrollPane(sideList);
+		libraryButton.addActionListener(new SidebarSelectionHandler());
+		editorButton.addActionListener(new SidebarSelectionHandler());
+		libraryButton.setActionCommand("library");
+		editorButton.setActionCommand("editor");
+
+	//	libraryButton.setAlignmentX(0);
+	//	editorButton.setAlignmentX(0);
+
+	//	libraryButton.setMinimumSize(new Dimension(200, 50));
+	//	editorButton.setMinimumSize(new Dimension(200, 50));
+
+		sideButtons = new JPanel();
+
+		sideButtons.setLayout(new BoxLayout(sideButtons, BoxLayout.PAGE_AXIS));
+
+		sideButtons.add(libraryButton);
+		sideButtons.add(editorButton);
+
+		sideScroll = new JScrollPane(sideButtons);
 		sideScroll.setVerticalScrollBarPolicy(
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
@@ -100,23 +126,6 @@ public class UserInterface extends JFrame
 		mainPanel = new JPanel();
 		mainPanel.add(libraryPanel);
 		mainPanel.add(editorPanel);
-	}
-
-	private void makeLibrary ()
-	{
-		String[] listContent = new String[5];
-		listContent[0] = "Enchiridion.rtf";
-		listContent[1] = "Blaat.rtf";
-		listContent[2] = "Bla.rtf";
-		listContent[3] = "Foo.rtf";
-		listContent[4] = "Bar.rtf";
-
-		libraryPanel = new JPanel();
-		libraryList = new JList(listContent);
-		libraryScroll = new JScrollPane(libraryList);
-
-		libraryScroll.setPreferredSize(new Dimension(1000, 800));
-		libraryScroll.setMaximumSize(new Dimension(1000, 800));
 	}
 
 	private void makeEditor ()
@@ -159,23 +168,35 @@ public class UserInterface extends JFrame
 		}
 	}
 
-	private class LibrarySelectionHandler implements ListSelectionListener
+	private class SidebarSelectionHandler implements ActionListener
 	{
-		public void valueChanged(ListSelectionEvent e)
+		public void actionPerformed(ActionEvent e)
 		{
-			if (e.getFirstIndex() == 1)
+			if (e.getActionCommand().equals("editor"))
 			{
 				editorPanel.setVisible(true);
 				libraryPanel.setVisible(false);
 			}
 
-			if (e.getFirstIndex() == 0)
+			if (e.getActionCommand().equals("library"))
 			{
 				editorPanel.setVisible(false);
 				libraryPanel.setVisible(true);
 			}
 
-			JOptionPane.showMessageDialog(null, e.getFirstIndex());
+			//JOptionPane.showMessageDialog(null, e.getFirstIndex());
+		}
+	}
+
+	/** Returns an ImageIcon, or null if the path was invalid. From Sun's site.
+	 */
+	protected ImageIcon createImageIcon(String path, String description) {
+		java.net.URL imgURL = getClass().getResource(path);
+		if (imgURL != null) {
+			return new ImageIcon(imgURL, description);
+		} else {
+			System.err.println("Couldn't find file: " + path);
+			return null;
 		}
 	}
 }
