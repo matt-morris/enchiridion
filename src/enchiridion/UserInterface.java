@@ -33,6 +33,11 @@ public class UserInterface extends JFrame
 	private FileIO file;
 
 	private Font sideFont = new Font ("SansSerif", Font.BOLD, 24);
+
+	/**
+	 * Icons from the Tango project.
+	 * http://tango.freedesktop.org/Tango_Desktop_Project
+	 */
 	private ImageIcon libraryIcon = createImageIcon(
 			"accessories-text-editor.png",
 			"Library");
@@ -188,7 +193,9 @@ public class UserInterface extends JFrame
 		}
 	}
 
-	/** Returns an ImageIcon, or null if the path was invalid. From Sun's site.
+	/** Returns an ImageIcon, or null if the path was invalid.
+	 * Source from Sun's site.
+	 * http://java.sun.com/docs/books/tutorial/uiswing/components/icon.html
 	 */
 	protected ImageIcon createImageIcon(String path, String description) {
 		java.net.URL imgURL = getClass().getResource(path);
