@@ -1,0 +1,1 @@
+Enchiridion is a text editing environment that helps keep track of and manage your ideas, helping your creativity flow in the order that you write it. Your work is managed in a library, and can be organized and arranged in the manner that makes most sense to you.
